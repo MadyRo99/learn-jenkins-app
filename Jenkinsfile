@@ -1,17 +1,8 @@
 pipeline {
     agent any
 
-    environment {
-        BUILD_FILE_NAME = 'laptop.txt'
-    }
-
     stages {
-        stage('w/o docker') {
-            steps {
-                sh 'echo "Without Docker"'
-            }
-        }
-        stage('w/ docker') {
+        stage('build') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -19,8 +10,14 @@ pipeline {
                 }
             }
             steps {
-                sh 'echo "With Docker"'
-                sh 'npm --version'
+                sh '''
+                    ls -la
+                    node --version
+                    npm --version
+                    npm ci
+                    npm run build
+                    ls -la
+                '''
             }
         }
     }
