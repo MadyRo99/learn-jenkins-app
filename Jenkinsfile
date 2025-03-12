@@ -98,7 +98,7 @@ pipeline {
                 }
             }
             environment {
-                CI_ENVIRONMENT_URL = 'https://learnjenkinsapp.netlify.app/'
+                CI_ENVIRONMENT_URL = 'https://learnjenkinsapp.netlify.app'
             }
             steps {
                 echo 'E2E stage'
