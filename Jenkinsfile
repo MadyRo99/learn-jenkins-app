@@ -92,7 +92,9 @@ pipeline {
         }
         stage ('Staging to Prod Approval') {
             steps {
-                input cancel: 'No, abort.', message: 'Ready to deploy?', ok: 'Yes, I\'m ready to deploy.'
+                timeout(15) {
+                    input cancel: 'No, abort.', message: 'Ready to deploy?', ok: 'Yes, I\'m ready to deploy.'
+                }
             }
         }
         stage ('Deploy Prod') {
