@@ -8,6 +8,15 @@ pipeline {
     }
 
     stages {
+        stage('AWS') {
+            docker {
+                image 'amazon/aws-cli'
+                args "--endpoint=''"
+            }
+            steps {
+                sh 'aws --version'
+            }
+        }
         stage ('docker') {
             steps {
                 sh 'docker build -t my-playwright .'
