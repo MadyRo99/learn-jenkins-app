@@ -13,7 +13,26 @@ pipeline {
                 sh 'docker build -t my-playwright .'
             }
         }
-         stage('build') {
+        stage('Deploy to AWS') {
+            agent {
+                docker {
+                    image 'amazon/aws-cli'
+                    args "--entrypoint=''"
+                }
+            }
+            environment {
+
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                    sh '''
+                        aws --version
+                        aws ecs register-task-definition --cli-input-json file://aws/task-definition-prod.json
+                    '''
+               }
+            }
+        }
+        stage('build') {
             agent {
                 docker {
                     image 'my-playwright'
