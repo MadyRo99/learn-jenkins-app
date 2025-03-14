@@ -9,9 +9,32 @@ pipeline {
     }
 
     stages {
-        stage ('docker') {
+        stage ('Build Playwright Image') {
             steps {
                 sh 'docker build -t my-playwright .'
+            }
+        }
+        stage('build') {
+            agent {
+                docker {
+                    image 'my-playwright'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    ls -la
+                    node --version
+                    npm --version
+                    npm ci
+                    npm run build
+                    ls -la
+                '''
+            }
+        }
+        stage ('Build Docker App Image') {
+            steps {
+                sh 'docker build -t myjenkinsapp .'
             }
         }
         stage('Deploy to AWS') {
@@ -32,24 +55,6 @@ pipeline {
                         aws ecs update-service --cluster LearnJenkinsCluster-Prod --service LearnJenkinsApp-Service-Prod --task-definition LearnJenkinsApp-TaskDefinition-Prod:$LATEST_TD_REVISION
                     '''
                }
-            }
-        }
-        stage('build') {
-            agent {
-                docker {
-                    image 'my-playwright'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                    ls -la
-                    node --version
-                    npm --version
-                    npm ci
-                    npm run build
-                    ls -la
-                '''
             }
         }
         stage('Run Tests') {
